@@ -2,45 +2,40 @@ import pandas as pd
 import streamlit as st
 import pickle
 import requests
-import pandas
 
 
 def fetch_poster(movie_id):
     response = requests.get(
-        'https://api.themoviedb.org/3/movie/{}?api_key=28e72177a7ad88aacae8a6b1787b0439&language=en-US'.format(
+        'https://api.themoviedb.org/3/movie/{}?api_key=6ca8c426cad94bc566892fee5465a380&language=en-US'.format(
             movie_id))
-    data = response.json()
-    # st.text(data)
-    return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
+    return 'https://image.tmdb.org/t/p/w500/{}'.format(response.json()['poster_path'])
 
 
 def recommend(movie):
-    movie_index = movies[movies['title'] == movie].index[0]
-    distances = similarity[movie_index]
-    movies_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
-    recommended_movies = []
-    recommended_movies_posters = []
-    for i in movies_list:
+    recommended_movies = recommendations[movie]
+    recommended_poster = []
+    out_movies = []
+    for i in recommended_movies:
         movie_id = movies.iloc[i[0]].movie_id
-        # fetch the poster
-        #  28e72177a7ad88aacae8a6b1787b0439
-        recommended_movies.append(movies.iloc[i[0]].title)
-        recommended_movies_posters.append(fetch_poster(movie_id))
-    return recommended_movies,recommended_movies_posters
+        movie_title = movies[movies['movie_id'] == movie_id]['title'].to_list()
+        out_movies.append(movie_title[0])
+        recommended_poster.append(fetch_poster(movie_id))
+    return out_movies, recommended_poster
 
 
 movies_dict = pickle.load(open('movies_dict.pkl', 'rb'))
-similarity = pickle.load(open('similarity.pkl', 'rb'))
+recommendations = pickle.load(open('recommendations.pkl', 'rb'))
 movies = pd.DataFrame(movies_dict)
-st.title("Movie Recommender System")
+st.title("Movie Recommendation System by Ramesh")
 
 selected_movie = st.selectbox(
     'Which movie you like?', movies['title'].values
 )
 
 if st.button('Recommend'):
-    names,posters = recommend(selected_movie)
-    col1, col2, col3,col4,col5 = st.columns(5)
+    names, posters = recommend(selected_movie)
+    st.text('Ramesh recommends these movies for you:')
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         st.text(names[0])
         st.image(posters[0])
@@ -56,4 +51,3 @@ if st.button('Recommend'):
     with col5:
         st.text(names[4])
         st.image(posters[4])
-
