@@ -12,7 +12,7 @@ You can checkout the app here:
     2. Exploratory Data Analysis
     3. Data Pre-Processing
     4. Vectorization
-    5. Model Builiding
+    5. Model Building
 
 ## Understanding the Data
 
@@ -70,15 +70,19 @@ Then created a new column, tags by adding all the columns.
 
 Then used countvectorizer to convert all the movie datapoints into vectors, i.e., text to vectors.
 
-Using Cosinesimilarity on the vectors, we find the cosine distance of all points w.r.t each point.
+Using Cosinesimilarity on the vectors, we find the cosine angle of one vector w.r.t to all the vectors.
+
 We ended up having a multi dimentional array of size 4800 * 4800.
 
-Then will take bottom 5 for each movie as there are more similar to the movie.
+Then will take top 5 cosine angle vectors for each movie as there are more similar to the movie.
+
+        Cosine similarity is directly proportional to similarity of the movies.
+        i.e., if the angle between the vectors is small, their cosine will be more and they are more similar.
 ## Deployment
 
 As the similarity file is very large, which has the distance of each movie with all the movies.
 
-We don't need the distance of movie with all the movies, we just need the distance of movie with nearest 5 movies. 
+We don't need the cosine similarity of the movie with all the movies, we just need the cosine similarity of movie with nearest 5 movies. 
 
 So we just take those 5 movies and make a dictionary with movie titles as keys and the nearest 5 movies as their values.
 
